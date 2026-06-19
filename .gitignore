@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+
+# Environnements virtuels
+venv/
+env/
+.env
+.venv/
+
+# Modeles entraines (trop lourds pour git - utiliser git-lfs si besoin)
+models/*.pkl
+models/imdb_data.pkl
+models/distilbert/pytorch_model.bin
+models/distilbert/model.safetensors
+
+# Cache HuggingFace
+.cache/
+*.cache
+
+# Graphiques et rapports generes automatiquement
+metrics/*.png
+metrics/*.json
+
+# Rapport Word (regenere avec generate_rapport.py)
+rapport_projet.docx
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# Variables d'environnement
+.env.local
+.env.production

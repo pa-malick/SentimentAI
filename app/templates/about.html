@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}SentimentAI 2050 - A propos du Projet{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+  <h1 class="hero-title">Le <span class="accent glow-text">Projet</span></h1>
+  <p class="hero-sub">Analyse de Sentiment NLP - Master 2 IA &amp; Data Science</p>
+</section>
+
+<section class="about-grid">
+
+  <div class="about-card glass-card">
+    <div class="about-card-icon accent">01</div>
+    <h3>Objectif</h3>
+    <p>
+      Construire un systeme complet d'analyse de sentiment sur les critiques de films IMDB,
+      en comparant des approches classiques (TF-IDF) et des modeles Transformer de pointe (DistilBERT).
+    </p>
+  </div>
+
+  <div class="about-card glass-card">
+    <div class="about-card-icon accent">02</div>
+    <h3>Dataset</h3>
+    <p>
+      Le dataset IMDB contient 50 000 critiques de films en anglais,
+      equilibre entre sentiments positifs et negatifs. Source : HuggingFace Datasets.
+    </p>
+  </div>
+
+  <div class="about-card glass-card">
+    <div class="about-card-icon accent">03</div>
+    <h3>Modeles</h3>
+    <ul class="tech-list">
+      <li><span class="accent">TF-IDF + LR</span> : Regression Logistique, rapide et interpretable</li>
+      <li><span class="accent">TF-IDF + RF</span> : Random Forest, robuste aux outliers</li>
+      <li><span class="accent">DistilBERT</span> : Transformer fine-tune, etat de l'art</li>
+    </ul>
+  </div>
+
+  <div class="about-card glass-card">
+    <div class="about-card-icon accent">04</div>
+    <h3>Technologies</h3>
+    <div class="tech-badges">
+      <span class="badge">Python</span>
+      <span class="badge">PyTorch</span>
+      <span class="badge">HuggingFace</span>
+      <span class="badge">Scikit-learn</span>
+      <span class="badge">Flask</span>
+      <span class="badge">GSAP</span>
+      <span class="badge">Docker</span>
+    </div>
+  </div>
+
+  <div class="about-card glass-card">
+    <div class="about-card-icon accent">05</div>
+    <h3>Vision Senegal 2050</h3>
+    <p>
+      Ce projet s'inscrit dans la dynamique d'emergence technologique du Senegal.
+      Former des competences locales en IA pour contribuer a la transformation numerique du continent africain.
+    </p>
+  </div>
+
+  <div class="about-card glass-card">
+    <div class="about-card-icon accent">06</div>
+    <h3>Pipeline complet</h3>
+    <ol class="pipeline-list">
+      <li>Chargement des donnees HuggingFace</li>
+      <li>Nettoyage et preprocessing du texte</li>
+      <li>Vectorisation TF-IDF ou tokenisation BERT</li>
+      <li>Entrainement et evaluation</li>
+      <li>Deploiement via Flask + Docker</li>
+    </ol>
+  </div>
+
+</section>
+
+<section class="pipeline-visual glass-card">
+  <h2 class="section-title">Architecture du Pipeline</h2>
+  <div class="pipeline-flow">
+    <div class="pipe-step">
+      <div class="pipe-icon">D</div>
+      <span>Donnees IMDB</span>
+    </div>
+    <div class="pipe-arrow">&#x2192;</div>
+    <div class="pipe-step">
+      <div class="pipe-icon">P</div>
+      <span>Preprocessing</span>
+    </div>
+    <div class="pipe-arrow">&#x2192;</div>
+    <div class="pipe-step">
+      <div class="pipe-icon">M</div>
+      <span>Modeles IA</span>
+    </div>
+    <div class="pipe-arrow">&#x2192;</div>
+    <div class="pipe-step">
+      <div class="pipe-icon">E</div>
+      <span>Evaluation</span>
+    </div>
+    <div class="pipe-arrow">&#x2192;</div>
+    <div class="pipe-step">
+      <div class="pipe-icon">W</div>
+      <span>Interface Web</span>
+    </div>
+  </div>
+</section>
+{% endblock %}
