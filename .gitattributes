@@ -1,0 +1,34 @@
+# Normalisation des fins de ligne.
+#
+# Sans ce fichier, Git convertit LF en CRLF sous Windows, ce qui fait apparaitre
+# des fichiers entiers comme modifies alors que le contenu n'a pas bouge.
+# Ici : LF dans le depot, conversion automatique a la sortie selon la plateforme.
+
+* text=auto eol=lf
+
+# Fichiers qui DOIVENT garder des fins de ligne LF, meme sous Windows :
+# Docker et les scripts shell cassent avec des CRLF.
+Dockerfile      text eol=lf
+Dockerfile.*    text eol=lf
+*.sh            text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.toml          text eol=lf
+
+# Code et configuration
+*.py            text eol=lf
+*.html          text eol=lf
+*.css           text eol=lf
+*.js            text eol=lf
+*.json          text eol=lf
+*.md            text eol=lf
+*.txt           text eol=lf
+
+# Fichiers binaires : Git ne doit surtout pas y toucher
+*.pkl           binary
+*.safetensors   binary
+*.bin           binary
+*.png           binary
+*.jpg           binary
+*.pdf           binary
+*.docx          binary

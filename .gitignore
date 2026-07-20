@@ -46,9 +46,12 @@ htmlcov/
 metrics/*.png
 metrics/*.json
 
-# Fichiers Word (regeneres avec generate_rapport.py)
+# Fichiers Word et leurs temporaires
 *.docx
 ~$*.docx
+~WRL*.tmp
+*.tmp
+
 
 # IDE
 .idea/
