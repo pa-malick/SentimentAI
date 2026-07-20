@@ -26,8 +26,11 @@ models/*.pkl
 # Les gros modeles restent hors de git
 models/tfidf_random_forest.pkl
 models/imdb_data.pkl
-models/distilbert/pytorch_model.bin
-models/distilbert/model.safetensors
+
+# DistilBERT en entier : les poids font 268 Mo et sont donc exclus. Versionner
+# seulement les JSON de config donnerait un demi-modele inutilisable sur un
+# clone frais, et trompeur pour qui reprend le projet.
+models/distilbert/
 
 # Cache HuggingFace
 .cache/

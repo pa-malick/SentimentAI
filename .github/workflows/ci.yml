@@ -1,14 +1,22 @@
+# Lance les tests a chaque push et pull request sur main.
+#
+# Note : "on" est ecrit entre guillemets. Sans cela, YAML l'interprete comme
+# le booleen true (regle YAML 1.1). GitHub gere ce cas, mais l'ecriture
+# explicite evite toute ambiguite avec les autres outils.
+
 name: CI
 
-# On lance les tests a chaque push et a chaque pull request sur main.
-on:
+"on":
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   tests:
+    name: Tests Python
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -36,7 +44,7 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Telecharger les stopwords NLTK
-        run: python -c "import nltk; nltk.download('stopwords', quiet=True)"
+        run: python -c "import nltk; nltk.download('stopwords')"
 
       - name: Lancer les tests
         # Le projet est 100% PyTorch : on evite que transformers charge TensorFlow
