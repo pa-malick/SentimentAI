@@ -1,12 +1,27 @@
+# Configuration de deploiement Render.
+# Chaque push sur main declenche automatiquement un nouveau deploiement.
+
 services:
   - type: web
     name: sentimentai-2050
     runtime: docker
     dockerfilePath: ./Dockerfile
     plan: free
-    healthCheckPath: /status
+    region: frankfurt
+
+    # Redeploiement automatique a chaque push sur la branche main
+    autoDeploy: true
+    branch: main
+
+    # Render interroge /health : si aucun modele n'est utilisable, la route
+    # repond 503 et le deploiement est signale comme defaillant.
+    healthCheckPath: /health
+
     envVars:
       - key: FLASK_ENV
         value: production
       - key: PYTHONUNBUFFERED
         value: "1"
+      # Render genere une valeur aleatoire : aucun secret dans le depot
+      - key: SECRET_KEY
+        generateValue: true

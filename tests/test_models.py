@@ -11,7 +11,15 @@ import unittest
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from src.models import TFIDFLogisticModel, TFIDFRandomForestModel
+
+# Importer la config en premier : elle pose USE_TF=0, ce qui evite que
+# transformers essaie de charger TensorFlow si un jour il est importe.
+import src.config  # noqa: F401
+
+# src/models.py n'importe plus torch ni transformers au niveau du module :
+# ces dependances ne sont chargees que si on utilise vraiment DistilBERT.
+# Ces tests tournent donc meme sans les extras BERT installes.
+from src.models import TFIDFLogisticModel, TFIDFRandomForestModel, SklearnTextModel
 
 
 class TestTFIDFLogisticModel(unittest.TestCase):
@@ -57,6 +65,79 @@ class TestTFIDFRandomForestModel(unittest.TestCase):
         self.model.fit(self.X, self.y)
         preds = self.model.predict(self.X)
         self.assertEqual(len(preds), 60)
+
+
+class TestClasseDeBase(unittest.TestCase):
+    """La mecanique commune (chemin, save, load) vit dans SklearnTextModel."""
+
+    def test_les_deux_modeles_heritent_de_la_base(self):
+        self.assertTrue(issubclass(TFIDFLogisticModel, SklearnTextModel))
+        self.assertTrue(issubclass(TFIDFRandomForestModel, SklearnTextModel))
+
+    def test_chemin_derive_du_nom(self):
+        self.assertTrue(TFIDFLogisticModel().path.endswith("tfidf_logistic.pkl"))
+        self.assertTrue(TFIDFRandomForestModel().path.endswith("tfidf_random_forest.pkl"))
+
+    def test_noms_distincts(self):
+        """Deux modeles ne doivent pas ecraser le fichier l'un de l'autre."""
+        self.assertNotEqual(TFIDFLogisticModel().path, TFIDFRandomForestModel().path)
+
+    def test_save_puis_load(self):
+        """Sauvegarde puis rechargement doivent redonner les memes predictions."""
+        import tempfile
+        from scipy.sparse import csr_matrix
+        from unittest.mock import patch
+
+        X = csr_matrix(np.random.rand(40, 20))
+        y = [0, 1] * 20
+
+        modele = TFIDFLogisticModel()
+        modele.fit(X, y)
+        avant = modele.predict(X)
+
+        # On redirige MODELS_DIR vers un dossier temporaire pour ne pas
+        # ecraser les vrais modeles du projet pendant les tests.
+        with tempfile.TemporaryDirectory() as dossier:
+            with patch("src.models.MODELS_DIR", dossier):
+                chemin = modele.save()
+                self.assertTrue(os.path.exists(chemin))
+
+                recharge = TFIDFLogisticModel().load()
+                apres = recharge.predict(X)
+
+        np.testing.assert_array_equal(avant, apres)
+
+    def test_load_modele_absent_leve_une_erreur_claire(self):
+        import tempfile
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as dossier:
+            with patch("src.models.MODELS_DIR", dossier):
+                with self.assertRaises(FileNotFoundError):
+                    TFIDFLogisticModel().load()
+
+
+class TestImportsParesseux(unittest.TestCase):
+    """
+    Point important de l'architecture : utiliser les modeles classiques ne doit
+    jamais charger torch ni transformers (plusieurs centaines de Mo).
+    """
+
+    def test_modeles_classiques_sans_torch(self):
+        import subprocess
+        code = (
+            "import sys; "
+            "import src.models, src.train, src.utils; "
+            "from app.app import create_app; "
+            "create_app(preload=False); "
+            "print('torch' in sys.modules, 'transformers' in sys.modules)"
+        )
+        racine = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        resultat = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True, text=True, cwd=racine,
+        )
+        self.assertEqual(resultat.stdout.strip(), "False False", resultat.stderr[-500:])
 
 
 class TestUtilsPredict(unittest.TestCase):

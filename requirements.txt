@@ -1,16 +1,24 @@
-torch>=2.0.0
-transformers>=4.35.0
-datasets>=2.14.0
+# Dependances de base : modeles classiques (TF-IDF + sklearn) et interface web.
+# Volontairement sans torch ni transformers, qui pesent plusieurs centaines de Mo.
+# Pour utiliser DistilBERT : pip install -r requirements-bert.txt
+
 scikit-learn>=1.3.0
 numpy>=1.24.0
 pandas>=2.0.0
-flask>=3.0.0
+datasets>=2.14.0
 nltk>=3.8.0
+
+# Interface web
+flask>=3.0.0
+werkzeug>=3.0.0
+gunicorn>=21.2.0
+
+# Graphiques et rapports
 matplotlib>=3.7.0
 seaborn>=0.12.0
 python-docx>=0.8.11
+Pillow>=10.0.0
+
+# Utilitaires
 joblib>=1.3.0
 tqdm>=4.66.0
-Pillow>=10.0.0
-werkzeug>=3.0.0
-gunicorn>=21.2.0

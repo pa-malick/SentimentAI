@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}SentimentAI 2050{% endblock %}</title>
+  <title>{% block title %}SentimentAI{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
@@ -15,10 +17,11 @@
   <div class="particles" id="particles"></div>
 
   <nav class="navbar">
-    <div class="nav-brand">
-      <span class="nav-logo">SA</span>
-      <span class="nav-title">SentimentAI<span class="accent">2050</span></span>
-    </div>
+    <a href="{{ url_for('main.index') }}" class="nav-brand">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}"
+           alt="" class="nav-logo" width="34" height="34" />
+      <span class="nav-title">SentimentAI</span>
+    </a>
     <div class="nav-links">
       <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">Analyser</a>
       <a href="{{ url_for('main.about') }}" class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}">Projet</a>
@@ -31,11 +34,10 @@
 
   <footer class="footer">
     <p>
-      SentimentAI 2050 &nbsp;|&nbsp; Master 2 IA &amp; Data Science
-      &nbsp;|&nbsp; <span class="accent">Senegal 2050</span>
+      SentimentAI &nbsp;|&nbsp; Master 2 IA &amp; Data Science
     </p>
     <p class="footer-portfolio">
-      Realise par &nbsp;
+      Réalisé par &nbsp;
       <a href="https://pa-malick.github.io/portfolio/" target="_blank" rel="noopener" class="portfolio-link">
         <span class="portfolio-icon">&#x1F310;</span> Mon Portfolio
       </a>

@@ -1,0 +1,14 @@
+# Dependances supplementaires pour DistilBERT (deep learning).
+# Installation : pip install -r requirements-bert.txt
+# (ce fichier inclut deja requirements.txt)
+#
+# Astuce : pour une machine sans GPU, installer torch en version CPU d'abord,
+# c'est bien plus leger :
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+-r requirements.txt
+
+torch>=2.0.0
+transformers>=4.35.0
+# transformers < 5 exige encore huggingface-hub < 1.0, sinon l'import casse.
+huggingface-hub>=0.34.0,<1.0

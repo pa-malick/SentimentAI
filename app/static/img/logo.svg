@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="SentimentAI">
+  <!-- Carre plein dans la couleur d'accent -->
+  <rect width="32" height="32" rx="6" fill="#ccff00"/>
+  <!-- Ligne de signal : le sentiment qui descend puis remonte -->
+  <path d="M6 15 L11 21 L16 11 L21 18 L26 9"
+        fill="none"
+        stroke="#0a0a0b"
+        stroke-width="2.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  <!-- Point final : la prediction -->
+  <circle cx="26" cy="9" r="2.6" fill="#0a0a0b"/>
+</svg>

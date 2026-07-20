@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}SentimentAI 2050 - Analyse de Sentiment{% endblock %}
+{% block title %}SentimentAI - Analyse de sentiment{% endblock %}
 
 {% block content %}
 <section class="hero">
@@ -8,13 +8,14 @@
     Analyse de<br/><span class="accent glow-text">Sentiment</span>
   </h1>
   <p class="hero-sub" id="heroSub">
-    Intelligence Artificielle au service de la comprehension des emotions textuelles
+    Trois modèles d'apprentissage automatique analysent le sentiment d'un texte,
+    entraînés sur 25 000 critiques de films.
   </p>
   <div class="badge-row">
     <span class="badge">NLP</span>
-    <span class="badge">Deep Learning</span>
+    <span class="badge">Scikit-learn</span>
     <span class="badge">DistilBERT</span>
-    <span class="badge">Senegal 2050</span>
+    <span class="badge">Flask</span>
   </div>
 </section>
 
@@ -22,39 +23,42 @@
   <div class="card glass-card">
     <div class="card-header">
       <div class="status-dot pulse"></div>
-      <span class="card-label">IA Active</span>
+      <span class="card-label">Modèles chargés</span>
     </div>
 
-    <h2 class="card-title">Entrez votre texte</h2>
+    <h2 class="card-title">Analysez un texte</h2>
 
     <div class="form-group">
-      <label class="form-label">Texte a analyser</label>
+      <label class="form-label">Texte à analyser</label>
       <textarea
         id="inputText"
         class="input-area"
-        placeholder="Copiez ici une critique de film, un avis, un commentaire..."
+        placeholder="Collez une critique de film, un avis, un commentaire..."
         rows="5"
+        maxlength="{{ max_length }}"
       ></textarea>
-      <div class="char-count"><span id="charCount">0</span> caracteres</div>
+      <div class="char-count">
+        <span id="charCount">0</span> / {{ max_length }} caractères
+      </div>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Modele IA</label>
+      <label class="form-label">Modèle</label>
       <div class="model-selector">
         <button class="model-btn active" data-model="logistic">
           <span class="model-icon">LR</span>
-          <span>Logistic Regression</span>
-          <span class="model-speed">Rapide</span>
+          <span>Régression logistique</span>
+          <span class="model-speed">89,2 %</span>
         </button>
         <button class="model-btn" data-model="random_forest">
           <span class="model-icon">RF</span>
-          <span>Random Forest</span>
-          <span class="model-speed">Robuste</span>
+          <span>Forêts aléatoires</span>
+          <span class="model-speed">85,9 %</span>
         </button>
         <button class="model-btn" data-model="distilbert">
           <span class="model-icon">DB</span>
           <span>DistilBERT</span>
-          <span class="model-speed">Precis</span>
+          <span class="model-speed">87,5 %</span>
         </button>
       </div>
     </div>
@@ -67,7 +71,7 @@
     <div class="result-container" id="resultContainer" style="display:none;">
       <div class="result-divider"></div>
       <div class="result-header">
-        <span class="result-label">Resultat de l'analyse</span>
+        <span class="result-label">Résultat de l'analyse</span>
         <span class="result-model" id="resultModel"></span>
       </div>
 
@@ -95,14 +99,14 @@
   </div>
 
   <div class="example-section">
-    <h3 class="examples-title">Essayez ces exemples</h3>
+    <h3 class="examples-title">Exemples à essayer</h3>
     <div class="examples-grid">
       <div class="example-card positive" data-text="This movie was absolutely fantastic! The acting was superb and the storyline kept me on the edge of my seat throughout. Highly recommended!">
         <span class="ex-tag pos">Positif</span>
         <p>This movie was absolutely fantastic! The acting was superb...</p>
       </div>
       <div class="example-card negative" data-text="Terrible film. The plot made no sense, the acting was wooden and the special effects were laughable. Total waste of time.">
-        <span class="ex-tag neg">Negatif</span>
+        <span class="ex-tag neg">Négatif</span>
         <p>Terrible film. The plot made no sense, the acting was wooden...</p>
       </div>
       <div class="example-card positive" data-text="One of the best movies I have ever seen. The director created something truly special with outstanding performances from the entire cast.">
@@ -110,7 +114,7 @@
         <p>One of the best movies I have ever seen. The director created...</p>
       </div>
       <div class="example-card negative" data-text="I cannot believe how bad this was. The script is awful, characters are flat and the ending makes absolutely no sense whatsoever.">
-        <span class="ex-tag neg">Negatif</span>
+        <span class="ex-tag neg">Négatif</span>
         <p>I cannot believe how bad this was. The script is awful...</p>
       </div>
     </div>
@@ -121,19 +125,19 @@
   <div class="stats-grid">
     <div class="stat-card">
       <span class="stat-value accent">50K</span>
-      <span class="stat-label">Exemples IMDB</span>
+      <span class="stat-label">Critiques IMDB</span>
     </div>
     <div class="stat-card">
       <span class="stat-value accent">3</span>
-      <span class="stat-label">Modeles IA</span>
+      <span class="stat-label">Modèles comparés</span>
     </div>
     <div class="stat-card">
-      <span class="stat-value accent">93%+</span>
-      <span class="stat-label">Accuracy BERT</span>
+      <span class="stat-value accent">89,2 %</span>
+      <span class="stat-label">Meilleur score</span>
     </div>
     <div class="stat-card">
-      <span class="stat-value accent">2050</span>
-      <span class="stat-label">Vision Senegal</span>
+      <span class="stat-value accent">25K</span>
+      <span class="stat-label">Textes de test</span>
     </div>
   </div>
 </section>

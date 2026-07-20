@@ -1,106 +1,85 @@
 {% extends "base.html" %}
-{% block title %}SentimentAI 2050 - A propos du Projet{% endblock %}
+{% block title %}SentimentAI - Le projet{% endblock %}
 
 {% block content %}
-<section class="about-hero">
-  <h1 class="hero-title">Le <span class="accent glow-text">Projet</span></h1>
-  <p class="hero-sub">Analyse de Sentiment NLP - Master 2 IA &amp; Data Science</p>
-</section>
+<section class="about-section">
+  <h1 class="about-title">Le <span class="accent">projet</span></h1>
+  <p class="hero-sub">
+    Analyse de sentiment par apprentissage automatique.
+    Master 2 Intelligence Artificielle &amp; Data Science.
+  </p>
 
-<section class="about-grid">
+  <div class="about-grid">
 
-  <div class="about-card glass-card">
-    <div class="about-card-icon accent">01</div>
-    <h3>Objectif</h3>
-    <p>
-      Construire un systeme complet d'analyse de sentiment sur les critiques de films IMDB,
-      en comparant des approches classiques (TF-IDF) et des modeles Transformer de pointe (DistilBERT).
-    </p>
+    <div class="about-card">
+      <h3>Objectif</h3>
+      <p>
+        Construire une chaîne complète d'analyse de sentiment sur des critiques
+        de films, en comparant des approches classiques et un modèle Transformer.
+      </p>
+    </div>
+
+    <div class="about-card">
+      <h3>Données</h3>
+      <p>
+        Le jeu IMDB réunit 50 000 critiques en anglais, réparties à parts égales
+        entre avis positifs et négatifs : 25 000 pour l'entraînement,
+        25 000 pour le test.
+      </p>
+    </div>
+
+    <div class="about-card">
+      <h3>Modèles comparés</h3>
+      <ul>
+        <li><span class="accent">Régression logistique</span> — 89,2 %, rapide et interprétable</li>
+        <li><span class="accent">Forêts aléatoires</span> — 85,9 %, robuste</li>
+        <li><span class="accent">DistilBERT</span> — 87,5 %, comprend le contexte</li>
+      </ul>
+    </div>
+
+    <div class="about-card">
+      <h3>Un résultat contre-intuitif</h3>
+      <p>
+        La régression logistique devance DistilBERT. La comparaison n'est pas
+        équitable : le premier a vu 25 000 critiques, le second seulement 2 000,
+        faute de puissance de calcul. À moyens limités, une méthode simple bien
+        réglée reste très compétitive.
+      </p>
+    </div>
+
+    <div class="about-card">
+      <h3>Technologies</h3>
+      <div class="badge-row">
+        <span class="badge">Python</span>
+        <span class="badge">Scikit-learn</span>
+        <span class="badge">PyTorch</span>
+        <span class="badge">HuggingFace</span>
+        <span class="badge">Flask</span>
+        <span class="badge">Docker</span>
+      </div>
+    </div>
+
+    <div class="about-card">
+      <h3>Qualité et reproductibilité</h3>
+      <p>
+        91 tests automatiques couvrent le nettoyage du texte, les modèles et
+        l'API, et s'exécutent à chaque modification. Les tirages aléatoires
+        sont fixés : deux entraînements identiques donnent exactement les
+        mêmes résultats.
+      </p>
+    </div>
+
   </div>
 
-  <div class="about-card glass-card">
-    <div class="about-card-icon accent">02</div>
-    <h3>Dataset</h3>
-    <p>
-      Le dataset IMDB contient 50 000 critiques de films en anglais,
-      equilibre entre sentiments positifs et negatifs. Source : HuggingFace Datasets.
-    </p>
-  </div>
-
-  <div class="about-card glass-card">
-    <div class="about-card-icon accent">03</div>
-    <h3>Modeles</h3>
-    <ul class="tech-list">
-      <li><span class="accent">TF-IDF + LR</span> : Regression Logistique, rapide et interpretable</li>
-      <li><span class="accent">TF-IDF + RF</span> : Random Forest, robuste aux outliers</li>
-      <li><span class="accent">DistilBERT</span> : Transformer fine-tune, etat de l'art</li>
+  <div class="about-card">
+    <h3>Le pipeline, étape par étape</h3>
+    <ul>
+      <li>Chargement des critiques depuis HuggingFace</li>
+      <li>Nettoyage du texte : balises, ponctuation, mots vides</li>
+      <li>Vectorisation TF-IDF ou tokenisation pour DistilBERT</li>
+      <li>Entraînement, puis évaluation sur des textes jamais vus</li>
+      <li>Mise en ligne via Flask et Docker</li>
     </ul>
-  </div>
-
-  <div class="about-card glass-card">
-    <div class="about-card-icon accent">04</div>
-    <h3>Technologies</h3>
-    <div class="tech-badges">
-      <span class="badge">Python</span>
-      <span class="badge">PyTorch</span>
-      <span class="badge">HuggingFace</span>
-      <span class="badge">Scikit-learn</span>
-      <span class="badge">Flask</span>
-      <span class="badge">GSAP</span>
-      <span class="badge">Docker</span>
-    </div>
-  </div>
-
-  <div class="about-card glass-card">
-    <div class="about-card-icon accent">05</div>
-    <h3>Vision Senegal 2050</h3>
-    <p>
-      Ce projet s'inscrit dans la dynamique d'emergence technologique du Senegal.
-      Former des competences locales en IA pour contribuer a la transformation numerique du continent africain.
-    </p>
-  </div>
-
-  <div class="about-card glass-card">
-    <div class="about-card-icon accent">06</div>
-    <h3>Pipeline complet</h3>
-    <ol class="pipeline-list">
-      <li>Chargement des donnees HuggingFace</li>
-      <li>Nettoyage et preprocessing du texte</li>
-      <li>Vectorisation TF-IDF ou tokenisation BERT</li>
-      <li>Entrainement et evaluation</li>
-      <li>Deploiement via Flask + Docker</li>
-    </ol>
-  </div>
-
-</section>
-
-<section class="pipeline-visual glass-card">
-  <h2 class="section-title">Architecture du Pipeline</h2>
-  <div class="pipeline-flow">
-    <div class="pipe-step">
-      <div class="pipe-icon">D</div>
-      <span>Donnees IMDB</span>
-    </div>
-    <div class="pipe-arrow">&#x2192;</div>
-    <div class="pipe-step">
-      <div class="pipe-icon">P</div>
-      <span>Preprocessing</span>
-    </div>
-    <div class="pipe-arrow">&#x2192;</div>
-    <div class="pipe-step">
-      <div class="pipe-icon">M</div>
-      <span>Modeles IA</span>
-    </div>
-    <div class="pipe-arrow">&#x2192;</div>
-    <div class="pipe-step">
-      <div class="pipe-icon">E</div>
-      <span>Evaluation</span>
-    </div>
-    <div class="pipe-arrow">&#x2192;</div>
-    <div class="pipe-step">
-      <div class="pipe-icon">W</div>
-      <span>Interface Web</span>
-    </div>
   </div>
 </section>
 {% endblock %}

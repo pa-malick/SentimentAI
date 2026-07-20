@@ -5,24 +5,60 @@ Fonctions utilitaires partagees dans tout le projet.
 import os
 import json
 import time
-import joblib
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import joblib
+
+from src.config import (
+    METRICS_DIR, METRICS_JSON_PATH, MODELS_DIR,
+    VECTORIZER_PATH, LOGISTIC_PATH, RANDOM_FOREST_PATH, DISTILBERT_DIR,
+    RANDOM_SEED, get_logger,
+)
+
+log = get_logger()
 
 
-def save_metrics_json(metrics_dict, filename="metrics_results.json"):
+def set_seed(seed: int = RANDOM_SEED) -> int:
+    """
+    Fixe la graine aleatoire partout pour que les resultats soient reproductibles.
+
+    Sans ca, deux entrainements identiques peuvent donner des scores legerement
+    differents (initialisation des poids, melange des batchs, echantillonnage).
+    Pour un projet ou l'on compare des modeles, c'est genant : on ne sait plus
+    si un ecart vient du modele ou du hasard.
+    """
+    import random
+    import numpy as np
+
+    random.seed(seed)
+    np.random.seed(seed)
+
+    # torch seulement s'il est installe (extras BERT)
+    try:
+        import torch
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
+    except ImportError:
+        pass
+
+    log.info(f"Graine aleatoire fixee a {seed}")
+    return seed
+
+
+def save_metrics_json(metrics_dict: Dict[str, Any], path: str = METRICS_JSON_PATH) -> str:
     """Sauvegarde les metriques dans un fichier JSON pour consultation ulterieure."""
-    os.makedirs("metrics", exist_ok=True)
+    os.makedirs(METRICS_DIR, exist_ok=True)
     metrics_dict["timestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    path = os.path.join("metrics", filename)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(metrics_dict, f, indent=2, ensure_ascii=False)
-    print(f"Metriques sauvegardees dans {path}")
+    log.info(f"Metriques sauvegardees dans {path}")
     return path
 
 
-def load_metrics_json(filename="metrics_results.json"):
+def load_metrics_json(path: str = METRICS_JSON_PATH) -> Dict[str, Any]:
     """Charge les metriques depuis le fichier JSON."""
-    path = os.path.join("metrics", filename)
     if not os.path.exists(path):
         return {}
     with open(path, "r", encoding="utf-8") as f:
@@ -40,7 +76,11 @@ def timer(func):
     return wrapper
 
 
-def predict_sentiment(text, model_type="logistic", models_cache=None):
+def predict_sentiment(
+    text: str,
+    model_type: str = "logistic",
+    models_cache: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
     """
     Fonction principale de prediction utilisee par l'API Flask.
     Utilise le cache des modeles precharges si disponible, sinon charge depuis le disque.
@@ -49,7 +89,7 @@ def predict_sentiment(text, model_type="logistic", models_cache=None):
     """
     from src.preprocessing import clean_text
 
-    label_map = {0: "Negatif", 1: "Positif"}
+    label_map = {0: "Négatif", 1: "Positif"}
     cache = models_cache or {}
 
     if model_type == "distilbert":
@@ -57,7 +97,7 @@ def predict_sentiment(text, model_type="logistic", models_cache=None):
             bert = cache["distilbert"]
         else:
             from src.models import DistilBERTClassifier
-            if not os.path.isdir("models/distilbert"):
+            if not os.path.isdir(DISTILBERT_DIR):
                 raise FileNotFoundError("DistilBERT non entraine. Lance : python main.py --bert")
             bert = DistilBERTClassifier.from_saved()
         pred, probs = bert.predict_text(text)
@@ -82,8 +122,7 @@ def predict_sentiment(text, model_type="logistic", models_cache=None):
     if key in cache:
         model = cache[key]
     else:
-        model_filename = "tfidf_logistic.pkl" if model_type == "logistic" else "tfidf_random_forest.pkl"
-        model_path = os.path.join("models", model_filename)
+        model_path = LOGISTIC_PATH if model_type == "logistic" else RANDOM_FOREST_PATH
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Modele introuvable : {model_path}. Lance l'entrainement d'abord.")
         model = joblib.load(model_path)
@@ -101,19 +140,36 @@ def predict_sentiment(text, model_type="logistic", models_cache=None):
     }
 
 
-def list_available_models():
+def list_available_models() -> List[str]:
     """Retourne la liste des modeles disponibles dans le dossier models/."""
-    if not os.path.exists("models"):
+    if not os.path.exists(MODELS_DIR):
         return []
-    return os.listdir("models")
+    return os.listdir(MODELS_DIR)
 
 
-def check_models_ready():
+def distilbert_disponible() -> bool:
+    """
+    Verifie que DistilBERT est reellement utilisable.
+
+    Il ne suffit pas que le dossier existe : les poids (model.safetensors ou
+    pytorch_model.bin) sont volumineux donc gitignores, alors que les fichiers
+    de config le sont parfois. Sur un clone frais, on peut donc avoir un dossier
+    distilbert/ present mais inutilisable. Se fier a isdir() ferait planter le
+    prechargement au demarrage du serveur.
+    """
+    if not os.path.isdir(DISTILBERT_DIR):
+        return False
+
+    poids = ["model.safetensors", "pytorch_model.bin"]
+    return any(os.path.exists(os.path.join(DISTILBERT_DIR, f)) for f in poids)
+
+
+def check_models_ready() -> Dict[str, bool]:
     """Verifie quels modeles sont deja entraines et disponibles."""
     status = {
-        "logistic": os.path.exists("models/tfidf_logistic.pkl"),
-        "random_forest": os.path.exists("models/tfidf_random_forest.pkl"),
-        "distilbert": os.path.isdir("models/distilbert"),
-        "vectorizer": os.path.exists("models/tfidf_vectorizer.pkl")
+        "logistic": os.path.exists(LOGISTIC_PATH),
+        "random_forest": os.path.exists(RANDOM_FOREST_PATH),
+        "distilbert": distilbert_disponible(),
+        "vectorizer": os.path.exists(VECTORIZER_PATH)
     }
     return status

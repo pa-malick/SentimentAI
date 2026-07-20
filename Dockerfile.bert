@@ -1,0 +1,35 @@
+# Image complete avec DistilBERT.
+# Bien plus lourde (torch + transformers + 268 Mo de poids) : a reserver a une
+# machine avec assez de RAM. Le plan gratuit de Render (512 Mo) ne suffit pas.
+#
+# Build : docker build -f Dockerfile.bert -t sentimentai-bert .
+
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt requirements-bert.txt ./
+# torch en version CPU : bien plus leger que la version GPU par defaut
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir -r requirements-bert.txt
+
+RUN python -c "import nltk; nltk.download('stopwords')"
+
+COPY . .
+
+RUN mkdir -p models metrics
+
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_ENV=production
+# Le projet est 100% PyTorch : on evite que transformers cherche TensorFlow
+ENV USE_TF=0
+
+EXPOSE 5000
+
+# 1 seul worker : DistilBERT est preclarge dans chaque worker (268 Mo piece)
+CMD gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 1 --timeout 300 "app.app:create_app()"

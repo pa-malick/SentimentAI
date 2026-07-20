@@ -19,6 +19,9 @@
   // Selection du modele
   modelBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
+      // Un modele non disponible sur le serveur n'est pas selectionnable
+      if (btn.classList.contains("unavailable")) return;
+
       modelBtns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       selectedModel = btn.dataset.model;
@@ -26,6 +29,40 @@
       gsap.from(btn, { scale: 0.95, duration: 0.2, ease: "back.out(2)" });
     });
   });
+
+  // Au chargement, on demande au serveur quels modeles sont reellement
+  // disponibles. Le site deploye ne contient que la regression logistique :
+  // autant griser les autres plutot que de laisser l'utilisateur tomber
+  // sur une erreur apres avoir clique.
+  async function checkAvailableModels() {
+    try {
+      const response = await fetch("/status");
+      if (!response.ok) return;
+      const status = await response.json();
+
+      modelBtns.forEach((btn) => {
+        if (status[btn.dataset.model] === false) {
+          btn.classList.add("unavailable");
+          btn.title = "Modele non disponible sur cette instance";
+
+          // Si le modele grise etait celui selectionne, on bascule
+          // sur le premier modele encore disponible.
+          if (btn.classList.contains("active")) {
+            btn.classList.remove("active");
+            const dispo = [...modelBtns].find((b) => !b.classList.contains("unavailable"));
+            if (dispo) {
+              dispo.classList.add("active");
+              selectedModel = dispo.dataset.model;
+            }
+          }
+        }
+      });
+    } catch (err) {
+      // Pas grave : en cas d'echec on laisse tous les boutons actifs
+    }
+  }
+
+  checkAvailableModels();
 
   // Exemples rapides
   exampleCards.forEach((card) => {
@@ -58,10 +95,7 @@
     try {
       const response = await fetch("/predict", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, model: selectedModel })
       });
 

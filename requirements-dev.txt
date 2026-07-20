@@ -1,0 +1,7 @@
+# Dependances utiles uniquement pour developper et tester.
+# Installation : pip install -r requirements.txt -r requirements-dev.txt
+
+-r requirements.txt
+
+pytest>=7.4.0
+pytest-cov>=4.1.0

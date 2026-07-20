@@ -7,10 +7,11 @@ import os
 import pickle
 import pandas as pd
 from datasets import load_dataset
-from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 
+from src.config import DATA_CACHE_PATH, MODELS_DIR, RANDOM_SEED, get_logger
 
-DATA_CACHE_PATH = "models/imdb_data.pkl"
+log = get_logger()
 
 
 def load_imdb_dataset(cache=True):
@@ -20,12 +21,12 @@ def load_imdb_dataset(cache=True):
     Retourne quatre listes : textes train, labels train, textes test, labels test.
     """
     if cache and os.path.exists(DATA_CACHE_PATH):
-        print("Chargement des donnees depuis le cache local...")
+        log.info("Chargement des donnees depuis le cache local...")
         with open(DATA_CACHE_PATH, "rb") as f:
             data = pickle.load(f)
         return data["train_texts"], data["train_labels"], data["test_texts"], data["test_labels"]
 
-    print("Telechargement du dataset IMDB depuis HuggingFace...")
+    log.info("Telechargement du dataset IMDB depuis HuggingFace...")
     dataset = load_dataset("stanfordnlp/imdb")
 
     train_texts = dataset["train"]["text"]
@@ -34,7 +35,7 @@ def load_imdb_dataset(cache=True):
     test_labels = dataset["test"]["label"]
 
     if cache:
-        os.makedirs("models", exist_ok=True)
+        os.makedirs(MODELS_DIR, exist_ok=True)
         with open(DATA_CACHE_PATH, "wb") as f:
             pickle.dump({
                 "train_texts": train_texts,
@@ -42,24 +43,45 @@ def load_imdb_dataset(cache=True):
                 "test_texts": test_texts,
                 "test_labels": test_labels
             }, f)
-        print(f"Donnees mises en cache dans {DATA_CACHE_PATH}")
+        log.info(f"Donnees mises en cache dans {DATA_CACHE_PATH}")
 
     return train_texts, train_labels, test_texts, test_labels
 
 
-def get_sample(train_texts, train_labels, test_texts, test_labels, n_train=5000, n_test=1000):
+def stratified_sample(texts, labels, n, seed=RANDOM_SEED):
     """
-    Retourne un sous-ensemble equilibre (stratifie) des donnees pour des tests rapides.
-    Le dataset stanfordnlp/imdb est trie par label, donc on prend la moitie de chaque classe.
-    """
-    def stratified_split(texts, labels, n):
-        pos_idx = [i for i, l in enumerate(labels) if l == 1][:n // 2]
-        neg_idx = [i for i, l in enumerate(labels) if l == 0][:n // 2]
-        indices = neg_idx + pos_idx
-        return [texts[i] for i in indices], [labels[i] for i in indices]
+    Tire n exemples au hasard en gardant la proportion de chaque classe.
 
-    t_texts, t_labels = stratified_split(list(train_texts), list(train_labels), n_train)
-    te_texts, te_labels = stratified_split(list(test_texts), list(test_labels), n_test)
+    On passe par train_test_split de sklearn plutot que de decouper a la main :
+    l'ancienne version prenait les n/2 PREMIERS de chaque classe, donc toujours
+    exactement les memes critiques (celles du debut du fichier). Un tirage
+    aleatoire est bien plus representatif du dataset, et random_state le rend
+    quand meme reproductible d'un run a l'autre.
+    """
+    texts, labels = list(texts), list(labels)
+
+    if n >= len(texts):
+        return texts, labels
+
+    sous_textes, _, sous_labels, _ = train_test_split(
+        texts,
+        labels,
+        train_size=n,
+        stratify=labels,
+        random_state=seed,
+        shuffle=True,
+    )
+    return sous_textes, sous_labels
+
+
+def get_sample(train_texts, train_labels, test_texts, test_labels,
+               n_train=5000, n_test=1000, seed=RANDOM_SEED):
+    """
+    Retourne un sous-ensemble equilibre (stratifie) des donnees pour aller vite.
+    Utilise en mode --sample.
+    """
+    t_texts, t_labels = stratified_sample(train_texts, train_labels, n_train, seed)
+    te_texts, te_labels = stratified_sample(test_texts, test_labels, n_test, seed)
     return t_texts, t_labels, te_texts, te_labels
 
 
@@ -76,9 +98,9 @@ def to_dataframe(texts, labels):
 
 def get_dataset_info(train_texts, train_labels, test_texts, test_labels):
     """Affiche quelques stats de base sur le dataset."""
-    print(f"Taille train : {len(train_texts)} exemples")
-    print(f"Taille test  : {len(test_texts)} exemples")
+    log.info(f"Taille train : {len(train_texts)} exemples")
+    log.info(f"Taille test  : {len(test_texts)} exemples")
     positifs_train = sum(train_labels)
-    print(f"Distribution train - Positif: {positifs_train} | Negatif: {len(train_labels) - positifs_train}")
+    log.info(f"Distribution train - Positif: {positifs_train} | Negatif: {len(train_labels) - positifs_train}")
     positifs_test = sum(test_labels)
-    print(f"Distribution test  - Positif: {positifs_test} | Negatif: {len(test_labels) - positifs_test}")
+    log.info(f"Distribution test  - Positif: {positifs_test} | Negatif: {len(test_labels) - positifs_test}")

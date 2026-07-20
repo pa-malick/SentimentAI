@@ -17,8 +17,14 @@ env/
 .env
 .venv/
 
-# Modeles entraines (trop lourds pour git - utiliser git-lfs si besoin)
+# Modeles entraines : on ne versionne que les plus legers, pour que le site
+# deploye fonctionne des le premier push (sinon aucun modele n'arrive en prod).
 models/*.pkl
+!models/tfidf_vectorizer.pkl
+!models/tfidf_logistic.pkl
+
+# Les gros modeles restent hors de git
+models/tfidf_random_forest.pkl
 models/imdb_data.pkl
 models/distilbert/pytorch_model.bin
 models/distilbert/model.safetensors
@@ -27,12 +33,19 @@ models/distilbert/model.safetensors
 .cache/
 *.cache
 
+# Tests et couverture
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
 # Graphiques et rapports generes automatiquement
 metrics/*.png
 metrics/*.json
 
-# Rapport Word (regenere avec generate_rapport.py)
-rapport_projet.docx
+# Fichiers Word (regeneres avec generate_rapport.py)
+*.docx
+~$*.docx
 
 # IDE
 .idea/
