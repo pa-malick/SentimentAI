@@ -2,8 +2,10 @@
 # Volontairement sans torch ni transformers, qui pesent plusieurs centaines de Mo.
 # Pour utiliser DistilBERT : pip install -r requirements-bert.txt
 
-scikit-learn>=1.3.0
-numpy>=1.24.0
+# Version figee : c'est elle qui a produit les modeles .pkl. Charger un modele
+# avec une autre version de scikit-learn peut fausser les predictions.
+scikit-learn==1.6.1
+numpy>=2.0.0,<3.0.0
 pandas>=2.0.0
 datasets>=2.14.0
 nltk>=3.8.0

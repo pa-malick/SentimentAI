@@ -2,18 +2,17 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
+# Pas de gcc/g++ : scikit-learn, numpy et scipy fournissent des paquets
+# precompiles pour Linux. Installer un compilateur ajouterait ~300 Mo pour rien.
 
-# Version legere : requirements.txt ne contient ni torch ni transformers.
-# L'app tourne avec le vectoriseur TF-IDF et la regression logistique, qui sont
+# Image de service : requirements-web.txt ne contient que le strict necessaire
+# pour repondre aux requetes (ni pandas, ni matplotlib, ni datasets).
+# L'app tourne avec le vectoriseur TF-IDF et la regression logistique, tous deux
 # versionnes dans git. Pour une image avec DistilBERT, voir Dockerfile.bert
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements-web.txt .
+RUN pip install --no-cache-dir -r requirements-web.txt
 
-# Les stopwords NLTK sont telecharges au build, pas au demarrage :
+# Les mots vides NLTK sont telecharges au build, pas au demarrage :
 # sinon le premier lancement echoue si le conteneur n'a pas de reseau.
 RUN python -c "import nltk; nltk.download('stopwords')"
 
@@ -26,5 +25,6 @@ ENV FLASK_ENV=production
 
 EXPOSE 5000
 
-# 2 workers suffisent : sans DistilBERT, l'empreinte memoire est faible.
-CMD gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 "app.app:create_app()"
+# Forme exec avec sh -c : permet d'utiliser $PORT (impose par Render)
+# tout en gerant correctement les signaux d'arret.
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 120 'app.app:create_app()'"]

@@ -72,7 +72,7 @@ def page_de_garde(doc):
         ("Analyse de sentiment par apprentissage automatique", 16, False),
         ("Comparaison de trois approches sur le dataset IMDB", 13, False),
         ("", 11, False),
-        ("Master 2 Intelligence Artificielle et Data Science", 12, True),
+        ("Master Data Science et Génie Logiciel", 12, True),
     ]:
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER

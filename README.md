@@ -25,7 +25,7 @@
 
 ---
 
-Projet realise dans le cadre du Master 2 Intelligence Artificielle et Data Science.
+Projet realise dans le cadre du Master Data Science et Genie Logiciel.
 
 ## Modeles implementes
 
@@ -58,6 +58,15 @@ pip install -r requirements-bert.txt
 # Pour developper et lancer les tests
 pip install -r requirements-dev.txt
 ```
+
+Quatre fichiers, du plus petit au plus complet :
+
+| Fichier | Contenu | Pour qui |
+|---|---|---|
+| `requirements-web.txt` | Flask, scikit-learn, NLTK | L'image Docker deployee |
+| `requirements.txt` | + pandas, datasets, matplotlib | Entrainer et evaluer |
+| `requirements-bert.txt` | + torch, transformers | Utiliser DistilBERT |
+| `requirements-dev.txt` | + pytest | Developper |
 
 ## Configuration
 

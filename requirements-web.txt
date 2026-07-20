@@ -1,0 +1,26 @@
+# Dependances minimales pour SERVIR les predictions (image Docker deployee).
+#
+# On n'y met que ce dont le serveur a besoin a l'execution. Tout ce qui sert
+# uniquement a l'entrainement ou a l'evaluation (pandas, datasets, matplotlib,
+# seaborn, python-docx) reste dans requirements.txt : ces librairies pesent
+# lourd et ne sont jamais importees quand on repond a une requete.
+#
+# Pour developper ou entrainer : pip install -r requirements.txt
+
+# Serveur web
+flask>=3.0.0
+werkzeug>=3.0.0
+gunicorn>=21.2.0
+
+# Chargement des modeles et prediction.
+#
+# IMPORTANT : la version de scikit-learn est figee sur celle qui a servi a
+# entrainer les modeles (.pkl). Depickler un modele avec une version differente
+# declenche un InconsistentVersionWarning et peut donner des resultats FAUX.
+# Si tu reentraines avec une version plus recente, mets ce numero a jour.
+scikit-learn==1.6.1
+numpy>=2.0.0,<3.0.0
+joblib>=1.3.0
+
+# Nettoyage du texte (liste des mots vides)
+nltk>=3.8.0
